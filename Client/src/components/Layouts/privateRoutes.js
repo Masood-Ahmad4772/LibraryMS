@@ -2,7 +2,7 @@ import Profile from "../user/Profile";
 
 import Admin from "../admin/AllAdmin";
 import ChangePassword from "../user/ChangePassword";
-import Alluser from "../admin/Alluser";
+import User from "../admin/user";
 import AddBook from "../admin/AddBook"
 
 
@@ -20,8 +20,8 @@ export const privateRoutes = [
     path:"/changepassword",
     element:<ChangePassword />
   },{
-    path:"alluser",
-    element:<Alluser />
+    path:"user",
+    element:<User />
   },{
     path:"/addbook",
     element:<AddBook />

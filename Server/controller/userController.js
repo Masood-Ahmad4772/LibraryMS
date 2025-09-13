@@ -96,12 +96,6 @@ const DeactivateUser = async (req, res) => {
     res.status(500).json("Error:" + err);
   }
 };
-
-
-
-
-
-
 const ActivateUserType = async (req, res) => {
   if (!req.params.id) return res.status(400).send("Error: id required");
   try {

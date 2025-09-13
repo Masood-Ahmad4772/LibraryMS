@@ -83,7 +83,7 @@ const validationSchema = Yup.object({
     .required("Email is required"),
 });
 
-const Alluser = () => {
+const User = () => {
   const [page, setPage] = useState(1);
   const limit = 5;
   const type = "User";
@@ -349,4 +349,4 @@ const Alluser = () => {
   );
 };
 
-export default Alluser;
+export default User;
