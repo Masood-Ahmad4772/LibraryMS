@@ -76,6 +76,13 @@ export const api = createApi({
         body:data
       })
     }),
+     updateBook: builder.mutation({
+         query: ({ id, data }) => ({
+             url: `/user/UpdateBook/${id}`,
+             method:"POST",
+             body:data
+         })
+     }),
 
 
     // get
@@ -103,6 +110,7 @@ export const api = createApi({
     getAllUser: builder.query({
       query: ({ page, limit,type }) => `/users/getAll?page=${page}&limit=${limit}&type=${type}`,
     }),
+
   }),
 });
 
@@ -116,6 +124,7 @@ export const {
   useDeactiveUserMutation,
   useActiveUserMutation,
   useEditUserMutation,
+    useUpdateBookMutation,
 
   // QUery
   useGetAllBooksQuery,
@@ -124,4 +133,5 @@ export const {
   useGetBookByGenreQuery,
   useGetUserDataQuery,
   useGetAllUserQuery,
+
 } = api;

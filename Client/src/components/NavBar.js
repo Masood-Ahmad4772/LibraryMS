@@ -31,7 +31,7 @@ const adminLinks = [{label: "AddBook", path: "/addbook"}, {
         children: [
             {label: "Book", path: "/book"},
             {
-                label: "ViewAll", path: "/viewall",
+                label: "ViewAllBook", path: "/viewallbooks",
             }
             ]
     }

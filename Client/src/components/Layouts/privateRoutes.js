@@ -4,6 +4,7 @@ import Admin from "../admin/AllAdmin";
 import ChangePassword from "../user/ChangePassword";
 import User from "../admin/user";
 import AddBook from "../admin/AddBook"
+import ViewAllBooks from "../admin/ViewAllBooks";
 
 
 
@@ -22,8 +23,12 @@ export const privateRoutes = [
   },{
     path:"user",
     element:<User />
-  },{
-    path:"/addbook",
-    element:<AddBook />
-  }
+  }, {
+        path: "/addbook",
+        element: <AddBook/>
+    },
+    {
+        path:"/viewallbooks",
+        element: <ViewAllBooks />
+    }
 ];
