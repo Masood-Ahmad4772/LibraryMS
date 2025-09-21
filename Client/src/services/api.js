@@ -77,10 +77,10 @@ export const api = createApi({
       })
     }),
      updateBook: builder.mutation({
-         query: ({ id, data }) => ({
-             url: `/user/UpdateBook/${id}`,
-             method:"POST",
-             body:data
+         query: ({ id, values }) => ({
+             url: `/book/Update/${id}`,
+             method:"PUT",
+             body:values
          })
      }),
 
@@ -124,7 +124,7 @@ export const {
   useDeactiveUserMutation,
   useActiveUserMutation,
   useEditUserMutation,
-    useUpdateBookMutation,
+  useUpdateBookMutation,
 
   // QUery
   useGetAllBooksQuery,

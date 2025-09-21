@@ -31,6 +31,9 @@ import {
 import * as Yup from "yup";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {toast} from "react-toastify";
+import swal from "sweetalert2";
+import Swal from "sweetalert2";
 
 // Config
 const ITEM_HEIGHT = 48;
@@ -127,15 +130,26 @@ const TextStyledField = styled(TextField)({
 });
 
 const validationSchema = Yup.object({
-    name: Yup.string()
-        .min(3, "Name must be at least 3 characters")
-        .required("Name is required"),
-    userName: Yup.string()
-        .min(3, "Username must be at least 3 characters")
-        .required("Username is required"),
-    email: Yup.string()
-        .email("Invalid email format")
-        .required("Email is required"),
+    title: Yup.string()
+        .min(6, "At least 6 characters")
+        .max(50, "Max 50 characters")
+        .required("Title is required"),
+    author: Yup.string()
+        .min(6, "At least 6 characters")
+        .max(50, "Max 50 characters")
+        .required("Author is required"),
+    description: Yup.string()
+        .max(500, "Max 500 characters")
+        .required("Description is required"),
+    publishedYear: Yup.number()
+        .min(1000, "Enter a valid year")
+        .max(new Date().getFullYear(), "Future year not allowed").required("publishedYear Required"),
+    genre: Yup.string().required("Genre is required"),
+    quantity: Yup.number()
+        .min(1, "At least 1 book required")
+        .required("Quantity is required"),
+    image: Yup.mixed(),
+    validFlag: Yup.boolean(),
 });
 
 
@@ -159,20 +173,39 @@ const ViewAllBooks = () => {
     // Genres query
     const {data: genresData, isLoading: isGenresLoading, refetch: refetchGenres} = useGetGenreAllActiveQuery();
 
-    const [updateBook] = useUpdateBookMutation()
+
+
+    // update book
+   const [preview, setPreview] =  useState()
+    const [updateBook,response] = useUpdateBookMutation()
+
 
     const onSubmit = async (values) => {
         if (!selectedUser) return;
 
-        const result = await updateBook({
-            id: selectedUser._id, // use _id
-            values,
-        });
+        const { _id,__v, ...payload } = values;
 
+        const result = await updateBook({
+            id: selectedUser._id,
+            values: payload,
+        });
         console.log("Updated book:", result);
-        refetchBooks(); // refresh table
-        handleClose();
+       if (result.error) {
+           Swal.fire(
+               "Error!",
+               result.error?.data || "Update Failed",
+               "error"
+           );
+        } else {
+           Swal.fire(
+               "Success!",
+               "Book Update Successfully",
+                refetchBooks()
+           )
+       }
+
     };
+
 
 
 
@@ -188,18 +221,22 @@ const ViewAllBooks = () => {
 
 
     const handleEdit = (book) => {
-        setSelectedUser(book)
+        setSelectedUser({
+            ...book,
+            genre: book.genre?._id || ""   // ensure Formik gets an ID string
+        });
+        setPreview(book.image)
         setOpen(true)
     }
 
-
-    console.log("booksData", booksData)
-
     const handleChange = (event) => {
-        const {
-            target: {value},
-        } = event;
-        setPersonName(typeof value === "string" ? value.split(",") : value);
+        const { target: { value } } = event;
+
+        if (value.includes("All")) {
+            setPersonName(genresData?.map((genre) => genre.name) || []);
+        } else {
+            setPersonName(value);
+        }
     };
 
 
@@ -210,6 +247,16 @@ const ViewAllBooks = () => {
 
 
     const Filter = ["All", "Active", "deActive"]
+
+    // sweet alert
+    const handleToggleUser = (book) => {
+        Swal.fire({
+            title: book.validFlag ? "Deactivate Book"  :"Active",
+            text: book.validFlag
+                ? "This will deactivate the Book."
+                : "This will activate the user.",
+        })
+    }
 
 
     return (
@@ -324,7 +371,7 @@ const ViewAllBooks = () => {
                                         <IconButton
                                             aria-label={book.validFlag ? "deactivate" : "activate"}
                                             color={book.validFlag ? "error" : "success"}
-                                            // onClick={() => handleToggleUser(user)}
+                                            onClick={() => handleToggleUser(book)}
                                         >
                                             {book.validFlag ? <DeleteIcon/> : <CheckIcon/>}
                                         </IconButton>
@@ -442,7 +489,7 @@ const ViewAllBooks = () => {
                                         sx={{ flex: 1 }}
                                         helperText={<ErrorMessage name="genre" />}
                                     >
-                                        {data?.map((g) => (
+                                        {genresData?.map((g) => (
                                             <MenuItem key={g._id} value={g._id}>
                                                 {g.name}
                                             </MenuItem>
@@ -512,7 +559,7 @@ const ViewAllBooks = () => {
                                     </Box>
                                     {preview && (
                                         <Typography variant="body2" color="text.secondary">
-                                            <strong>{preview}</strong>
+                                            <strong>{typeof preview === "string" ? preview : preview.name}</strong>
                                         </Typography>
                                     )}
                                 </Box>

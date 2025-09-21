@@ -128,7 +128,7 @@ const updateBook = async (req, res) => {
     if (!updatedBook) {
       return res.status(404).send('Book not Found');
     }
-    res.status(200).send("Book Updated SuccessFully");
+      res.status(200).json({ message: "Book Updated Successfully" });
   } catch (err) {
     res.status(500).send('Error updating book' + err);
   }
