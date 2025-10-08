@@ -81,11 +81,12 @@ const ViewAllUserType = () => {
     const [open, setOpen] = useState(false);
     const [loadingId, setLoadingId] = useState(null);
 
+    // Queries & Mutations
     const { data, isLoading, isFetching, refetch } = useGetAllUserTypeQuery();
-    console.log("data", data)
-    const [updateUserType] = useUpdateUserTypeMutation();
-    const [activeUserType] = useActiveUserTypeMutation();
+    const [updateUserType, { isLoading: isUpdating }] = useUpdateUserTypeMutation();
+    const [activeUserType,{error:err}] = useActiveUserTypeMutation();
     const [deactiveUserType] = useDeactiveUserTypeMutation();
+    console.log("err",err)
 
     const handleEdit = (user) => {
         setSelectedUserType(user);
@@ -98,38 +99,65 @@ const ViewAllUserType = () => {
     };
 
     const onSubmit = async (values) => {
-        const { name } = values;
-        const result = await updateUserType({
-            id: selectedUserType._id,
-            data: { name },
-        });
+        try {
+            const result = await updateUserType({
+                id: selectedUserType._id,
+                data: { name: values.name },
+            }).unwrap();
 
-        handleClose();
-
-        if (result.error) {
-            Swal.fire("Error!", result.error?.data || "Update failed", "error");
-        } else {
             Swal.fire("Success!", "UserType updated successfully.", "success");
+            handleClose();
             refetch();
+        } catch (err) {
+            Swal.fire("Error!", err?.data?.message || "Update failed", "error");
         }
     };
 
     const handleToggleUserType = async (user) => {
-        setLoadingId(user._id);
-        try {
-            if (user.validFlag) {
-                await deactiveUserType(user.id).unwrap();
-                Swal.fire("Success!", "UserType has been deactivated.", "success");
-            } else {
-                await activeUserType(user.id).unwrap();
-                Swal.fire("Success!", "UserType has been activated.", "success");
+        console.log("user",user )
+        Swal.fire({
+            title: user.validFlag ? "Deactivate ViewAllUser?" : "Activate ViewAllUser?",
+            text: user.validFlag
+                ? "This will deactivate the user."
+                : "This will activate the user.",
+            icon: user.validFlag ? "warning" : "success",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: user.validFlag ? "Yes, deactivate!" : "Yes, activate!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (user.validFlag) {
+                    deactiveUserType(user._id)
+                        .unwrap()
+                        .then(() => {
+                            Swal.fire("warning!", `${user.name} has been deactivated.`, "success");
+                            refetch();
+                        })
+                        .catch((err) => {
+                            Swal.fire(
+                                "Error!",
+                                err?.data?.message || "Something went wrong.",
+                                "error"
+                            );
+                        });
+                } else {
+                    activeUserType(user._id)
+                        .unwrap()
+                        .then(() => {
+                            Swal.fire("Success!", `${user.name} has been Activated.`, "success");
+                            refetch();
+                        })
+                        .catch((err) => {
+                            Swal.fire(
+                                "Error!",
+                                err?.data?.message || "Something went wrong.",
+                                "error"
+                            );
+                        });
+                }
             }
-            refetch();
-        } catch (err) {
-            Swal.fire("Error!", err?.data?.message || "Something went wrong.", "error");
-        } finally {
-            setLoadingId(null);
-        }
+        });
     };
 
     const initialValues = {
@@ -152,7 +180,7 @@ const ViewAllUserType = () => {
             }}
         >
             <Container maxWidth="lg">
-                {Loading ? <Loader Loading={isLoading} /> : null}
+                {Loading && <Loader Loading={isLoading} />}
                 <TableContainer
                     component={Paper}
                     sx={{
@@ -168,10 +196,7 @@ const ViewAllUserType = () => {
                                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID</TableCell>
                                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>Name</TableCell>
                                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>Status</TableCell>
-                                <TableCell
-                                    sx={{ color: "white", fontWeight: "bold" }}
-                                    align="center"
-                                >
+                                <TableCell sx={{ color: "white", fontWeight: "bold" }} align="center">
                                     Actions
                                 </TableCell>
                             </TableRow>
@@ -249,9 +274,9 @@ const ViewAllUserType = () => {
                                     type="submit"
                                     variant="contained"
                                     color="primary"
-                                    disabled={isLoading}
+                                    disabled={isUpdating}
                                 >
-                                    {isLoading ? "Updating..." : "Update"}
+                                    {isUpdating ? "Updating..." : "Update"}
                                 </Button>
                             </DialogActions>
                         </Form>

@@ -103,14 +103,14 @@ export const api = createApi({
           })
       }),
     activeUserType: builder.mutation({
-          query: ({id}) => ({
-              url:`/usertype/Active/${id}`,
+          query: (id) => ({
+              url:`/usertype/Activate/${id}`,
               method:"PATCH",
 
           })
       }),
     deactiveUserType:builder.mutation({
-          query:({id}) => ({
+          query:(id) => ({
               url:`/usertype/Deactivate/${id}`,
               method:"PATCH",
           })

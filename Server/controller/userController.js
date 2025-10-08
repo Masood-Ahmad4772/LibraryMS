@@ -105,7 +105,7 @@ const ActivateUserType = async (req, res) => {
     if (!userTypeStatus) {
       res.status(404).send("Error: ViewAllUser Type Not Found");
     }
-    res.status(200).send("ViewAllUser Type Activated");
+    res.status(200).json("ViewAllUser Type Activated");
   } catch (err) {
     res.status(500).send("Error:" + err);
   }
@@ -119,7 +119,7 @@ const DeactivateUserType = async (req, res) => {
     if (!userTypeStatus) {
       res.status(404).send("Error: ViewAllUser Type Not Found");
     }
-    res.status(200).send("ViewAllUser Type Deactivated");
+    res.status(200).json("ViewAllUser Type Deactivated");
   } catch (err) {
     res.status(500).send("Error:" + err);
   }
