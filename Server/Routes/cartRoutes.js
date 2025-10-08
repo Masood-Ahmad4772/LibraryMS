@@ -15,7 +15,7 @@ const router = express.Router();
  * @swagger
  * /user/addToCart:
  *   post:
- *     summary: Add to Cart of User
+ *     summary: Add to Cart of ViewAllUser
  *     tags: [Cart]
  *     security:
  *       - BearerAuth: []  # This route requires authentication
@@ -79,7 +79,7 @@ router.post("/addToCart", AddToCartGuest);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
+ *         description: ViewAllUser ID
  *     responses:
  *       200:
  *         description: Cart retrieved successfully
@@ -98,7 +98,7 @@ router.get("/getCart/:userId?", getCart);
  *         required: false
  *         schema:
  *           type: string
- *         description: Optional User ID (if logged in)
+ *         description: Optional ViewAllUser ID (if logged in)
  *       - in: query
  *         name: itemId
  *         required: true

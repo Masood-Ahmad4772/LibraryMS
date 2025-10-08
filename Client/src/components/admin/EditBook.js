@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Button,
@@ -12,7 +12,7 @@ import {
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import {
-    useAddBookMutation,
+    useUpdateBookMutation,
     useGetGenreAllActiveQuery,
 } from "../../services/api";
 import { toast } from "react-toastify";
@@ -37,7 +37,6 @@ const validationSchema = Yup.object({
         .min(1, "At least 1 book required")
         .required("Quantity is required"),
     image: Yup.mixed(),
-    validFlag: Yup.boolean(),
 });
 
 const TextStyledField = styled(TextField)({
@@ -51,48 +50,34 @@ const TextStyledField = styled(TextField)({
         fontWeight: 300,
         color: "gray",
     },
-    "& .MuiInputLabel-root.Mui-focused": {
-        color: "gray",
-    },
-    "& .MuiFormHelperText-root": {
-        color: "red",
-    },
     "& .MuiOutlinedInput-root": {
         borderRadius: "20px",
-        "& fieldset": {
-            borderColor: "gray",
-        },
-        "&:hover fieldset": {
-            borderColor: "gray",
-            borderWidth: "2px",
-        },
-        "&.Mui-focused fieldset": {
-            borderColor: "gray",
-            borderWidth: "2px",
-        },
     },
 });
 
-const EditBook = () => {
+const EditBook = ({ selectedUser }) => {
     const [preview, setPreview] = useState(null);
-    const [addBook, response] = useAddBookMutation();
-    const { data, error, isLoading } = useGetGenreAllActiveQuery();
-    console.log("data", data);
-    console.log("error", response?.error);
-    console.log("Response", response);
+    const [updateBook] = useUpdateBookMutation();
+    const { data: genres } = useGetGenreAllActiveQuery();
+
+    useEffect(() => {
+        if (selectedUser?.image) {
+            setPreview(selectedUser.image); // show old image
+        }
+    }, [selectedUser]);
+
     const initialValues = {
-        title: "",
-        author: "",
-        description: "",
-        publishedYear: "",
-        genre: "",
-        quantity: 1,
+        title: selectedUser?.title || "",
+        author: selectedUser?.author || "",
+        description: selectedUser?.description || "",
+        publishedYear: selectedUser?.publishedYear || "",
+        genre: selectedUser?.genre?._id || "",
+        quantity: selectedUser?.quantity || 1,
         image: null,
     };
 
-    const onSubmit = (values, { resetForm }) => {
+    const onSubmit = async (values) => {
         const formData = new FormData();
-
         formData.append("title", values.title);
         formData.append("author", values.author);
         formData.append("description", values.description);
@@ -101,14 +86,20 @@ const EditBook = () => {
         formData.append("quantity", values.quantity);
 
         if (values.image) {
-            formData.append("image", values.image); // File object
+            formData.append("image", values.image);
         }
 
-        addBook(formData); // ✅ send FormData not JSON
-        resetForm();
-        setPreview(null);
-        toast.success("Book Added Successfully ✅");
+        try {
+            await updateBook({ id: selectedUser._id, values: formData }).unwrap();
+            toast.success("Book Updated Successfully ✅");
+        } catch (err) {
+            toast.error(err?.data?.message || "Update Failed ❌");
+        }
     };
+
+    if (!selectedUser) {
+        return <Typography align="center">No book selected for edit</Typography>;
+    }
 
     return (
         <Container
@@ -126,47 +117,34 @@ const EditBook = () => {
         >
             <Paper elevation={0} sx={{ p: 4, borderRadius: "12px", minWidth: "60%" }}>
                 <Typography align="center" variant="h5" fontWeight="bold" gutterBottom>
-                    Add New Book
+                    Edit Book
                 </Typography>
 
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={onSubmit}
+                    enableReinitialize // ✅ important for prefilling after selecting user
                 >
                     {({ setFieldValue }) => (
-                        <Form
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "10px",
-                            }}
-                        >
+                        <Form style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                             {/* Title & Author */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    gap: "16px",
-                                    flexDirection: { xs: "column", sm: "row" },
-                                }}
-                            >
+                            <Box sx={{ display: "flex", gap: "16px", flexDirection: { xs: "column", sm: "row" } }}>
                                 <Field
                                     as={TextStyledField}
                                     name="title"
                                     label="Title"
                                     size="small"
-                                    variant="outlined"
-                                    sx={{ flex: 1 }}
                                     helperText={<ErrorMessage name="title" />}
+                                    sx={{ flex: 1 }}
                                 />
                                 <Field
                                     as={TextStyledField}
                                     name="author"
                                     label="Author"
                                     size="small"
-                                    variant="outlined"
-                                    sx={{ flex: 1 }}
                                     helperText={<ErrorMessage name="author" />}
+                                    sx={{ flex: 1 }}
                                 />
                             </Box>
 
@@ -178,106 +156,75 @@ const EditBook = () => {
                                 fullWidth
                                 multiline
                                 rows={3}
-                                variant="outlined"
                                 helperText={<ErrorMessage name="description" />}
                             />
 
                             {/* Published Year, Genre & Quantity */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    gap: "16px",
-                                    flexDirection: { xs: "column", sm: "row" },
-                                }}
-                            >
+                            <Box sx={{ display: "flex", gap: "16px", flexDirection: { xs: "column", sm: "row" } }}>
                                 <Field
                                     as={TextStyledField}
                                     name="publishedYear"
                                     label="Published Year"
                                     type="number"
                                     size="small"
-                                    variant="outlined"
-                                    sx={{ flex: 1 }}
                                     helperText={<ErrorMessage name="publishedYear" />}
+                                    sx={{ flex: 1 }}
                                 />
+
                                 <Field
                                     as={TextStyledField}
                                     select
                                     name="genre"
                                     label="Genre"
                                     size="small"
-                                    variant="outlined"
-                                    sx={{ flex: 1 }}
                                     helperText={<ErrorMessage name="genre" />}
+                                    sx={{ flex: 1 }}
                                 >
-                                    {data?.map((g) => (
+                                    {genres?.map((g) => (
                                         <MenuItem key={g._id} value={g._id}>
                                             {g.name}
                                         </MenuItem>
                                     ))}
                                 </Field>
+
                                 <Field
                                     as={TextStyledField}
                                     name="quantity"
                                     label="Quantity"
                                     type="number"
                                     size="small"
-                                    variant="outlined"
-                                    sx={{ width: "fitContent" }}
                                     helperText={<ErrorMessage name="quantity" />}
+                                    sx={{ flex: 1 }}
                                 />
                             </Box>
 
                             {/* File Upload */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "5px",
-                                }}
-                            >
-                                <Box
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                <Button
+                                    variant="outlined"
+                                    component="label"
                                     sx={{
-                                        display: "flex",
-                                        gap: "10px",
-                                        alignItems: "center",
+                                        height: "40px",
+                                        borderRadius: "20px",
+                                        borderColor: "blue",
+                                        backgroundColor: "blue",
+                                        color: "white",
                                     }}
                                 >
-                                    <Button
-                                        variant="outlined"
-                                        component="label"
-                                        sx={{
-                                            height: "40px",
-                                            borderRadius: "20px",
-                                            borderColor: "blue",
-                                            backgroundColor: "blue",
-                                            color: "white",
-                                            "&:hover": {
-                                                borderColor: "blue",
-                                                borderWidth: "2px",
-                                            },
+                                    Upload Image
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={(e) => {
+                                            const file = e.currentTarget.files[0];
+                                            if (file) {
+                                                setFieldValue("image", file);
+                                                setPreview(URL.createObjectURL(file)); // ✅ show preview instantly
+                                            }
                                         }}
-                                    >
-                                        Upload Image
-                                        <input
-                                            type="file"
-                                            hidden
-                                            onChange={(e) => {
-                                                const file = e.currentTarget.files[0];
-                                                console.log("file", file);
-                                                if (file) {
-                                                    setFieldValue("image", file);
-                                                    setPreview(file.name);
-                                                }
-                                            }}
-                                        />
-                                    </Button>
-                                    <ErrorMessage
-                                        name="image"
-                                        component="div"
-                                        style={{ color: "red", fontSize: "14px" }}
                                     />
-                                </Box>
+                                </Button>
+
                                 {preview && (
                                     <Typography variant="body2" color="text.secondary">
                                         <strong>{preview}</strong>
@@ -285,9 +232,9 @@ const EditBook = () => {
                                 )}
                             </Box>
 
-                            {/* Submit Button */}
+                            {/* Submit */}
                             <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-                                Add Book
+                                Save Changes
                             </Button>
                         </Form>
                     )}

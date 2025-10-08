@@ -13,6 +13,7 @@ export const api = createApi({
     },
   }),
   endpoints: (builder) => ({
+
     login: builder.mutation({
       query: (credentials) => ({
         url: "/login",
@@ -20,7 +21,6 @@ export const api = createApi({
         body: credentials,
       }),
     }),
-
     signup: builder.mutation({
       query: (credentials) => ({
         url: "/Signup",
@@ -28,7 +28,6 @@ export const api = createApi({
         body: credentials,
       }),
     }),
-
     addBook: builder.mutation({
       query: (formData) => ({
         url: "/book/Add",
@@ -36,9 +35,7 @@ export const api = createApi({
         body: formData,
       }),
     }),
-
     // update
-
     changeUserPassword: builder.mutation({
       query: (credentials) => ({
         url: "/user/changePassword",
@@ -46,7 +43,6 @@ export const api = createApi({
         body: credentials,
       }),
     }),
-
     updateUser: builder.mutation({
       query: ({ id, data }) => ({
         url: `/user/Update/${id}`,
@@ -54,7 +50,6 @@ export const api = createApi({
         body: data,
       }),
     }),
-
     deactiveUser : builder.mutation({
       query: (id) => ({
         url:`/user/DeactiveUser/${id}`,
@@ -67,7 +62,6 @@ export const api = createApi({
         method:"PATCH",
       })
     }),
-
     editUser: builder.mutation({
       query: ({id, data}) => ({
 
@@ -76,41 +70,78 @@ export const api = createApi({
         body:data
       })
     }),
-     updateBook: builder.mutation({
+    updateBook: builder.mutation({
          query: ({ id, values }) => ({
              url: `/book/Update/${id}`,
              method:"PUT",
              body:values
          })
      }),
+    activeBook: builder.mutation({
+          query: (id) => ({
+              url: `/book/Activate/${id}`,
+              method:"PATCH",
+          })
+      }),
+    deactivateBook: builder.mutation({
+          query: (id) => ({
+              url:`/book/Deactivate/${id}`, method:"PATCH"
+          })
+      }),
+    addUserType: builder.mutation({
+          query:(name) => ({
+              url:'/usertype/Add',
+              method:"POST",
+              body:name,
+          })
+      }),
+    updateUserType: builder.mutation({
+          query:({id,data}) => ({
+              url:`/usertype/Update/${id}`,
+              method:"PUT",
+              body:data,
+          })
+      }),
+    activeUserType: builder.mutation({
+          query: ({id}) => ({
+              url:`/usertype/Active/${id}`,
+              method:"PATCH",
 
-
+          })
+      }),
+    deactiveUserType:builder.mutation({
+          query:({id}) => ({
+              url:`/usertype/Deactivate/${id}`,
+              method:"PATCH",
+          })
+      }),
     // get
     getAllBooks: builder.query({
       query: ({ page = 1, limit }) =>
-        `/book/GetAllActive?page=${page}&limit=${limit}`,
+        `/book/GetAll?page=${page}&limit=${limit}`,
     }),
-
+    getAllActiveBooks: builder.query({
+      query: ({ page = 1, limit }) =>
+        `/book/getAllActive?page=${page}&limit=${limit}`,
+    }),
     getBookDetailById: builder.query({
       query: (id) => `/book/GetById/${id}`,
     }),
-
     getGenreAllActive: builder.query({
       query: () => "/genre/getAllActive",
     }),
-
     getBookByGenre: builder.query({
       query: (genreId) => `/book/GetBooksByGenre/${genreId}`,
     }),
-
     getUserData: builder.query({
       query: (id) => `/user/getById/${id}`,
     }),
-
     getAllUser: builder.query({
       query: ({ page, limit,type }) => `/users/getAll?page=${page}&limit=${limit}&type=${type}`,
     }),
-
+      getAllUserType: builder.query({
+          query:() => "/usertype/getAll"
+      })
   }),
 });
 
@@ -125,13 +156,21 @@ export const {
   useActiveUserMutation,
   useEditUserMutation,
   useUpdateBookMutation,
+  useActiveBookMutation,
+  useDeactivateBookMutation,
+  useAddUserTypeMutation,
+  useUpdateUserTypeMutation,
+  useActiveUserTypeMutation,
+  useDeactiveUserTypeMutation,
 
-  // QUery
+  //   get query
+  useGetAllActiveBooksQuery,
   useGetAllBooksQuery,
   useGetBookDetailByIdQuery,
   useGetGenreAllActiveQuery,
   useGetBookByGenreQuery,
   useGetUserDataQuery,
   useGetAllUserQuery,
+    useGetAllUserTypeQuery
 
 } = api;

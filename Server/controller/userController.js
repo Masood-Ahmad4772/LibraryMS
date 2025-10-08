@@ -23,7 +23,7 @@ const addUserType = async (req, res) => {
       name: req.body.name,
     });
     await newUserType.save();
-    res.status(201).send("User Type Added Successfully");
+    res.status(201).json("ViewAllUser Type Added Successfully");
   } catch (err) {
     res.status(500).send("Error:" + err);
   }
@@ -59,9 +59,9 @@ const updateUserType = async (req, res) => {
       }
     );
     if (!updatedUserType) {
-      return res.status(404).send("Error: User Type Not Found");
+      return res.status(404).send("Error: ViewAllUser Type Not Found");
     }
-    res.status(200).send("User Type Updated Successfully");
+    res.status(200).json("ViewAllUser Type Updated Successfully");
   } catch (err) {
     res.status(500).send("Error:" + err);
   }
@@ -73,9 +73,9 @@ const ActivateUser = async (req, res) => {
       validFlag: true,
     });
     if (!userStatus) {
-      res.status(404).send("Error: User  Not Found");
+      res.status(404).send("Error: ViewAllUser  Not Found");
     }
-    res.status(200).json("User is Activated");
+    res.status(200).json("ViewAllUser is Activated");
   } catch (err) {
     res.status(500).json("Error:" + err);
   }
@@ -89,9 +89,9 @@ const DeactivateUser = async (req, res) => {
       validFlag: false,
     });
     if (!userStatus) {
-      res.status(404).send("Error: User Not Found");
+      res.status(404).send("Error: ViewAllUser Not Found");
     }
-    res.status(200).json("User Deactivated");
+    res.status(200).json("ViewAllUser Deactivated");
   } catch (err) {
     res.status(500).json("Error:" + err);
   }
@@ -103,9 +103,9 @@ const ActivateUserType = async (req, res) => {
       validFlag: true,
     });
     if (!userTypeStatus) {
-      res.status(404).send("Error: User Type Not Found");
+      res.status(404).send("Error: ViewAllUser Type Not Found");
     }
-    res.status(200).send("User Type Activated");
+    res.status(200).send("ViewAllUser Type Activated");
   } catch (err) {
     res.status(500).send("Error:" + err);
   }
@@ -117,9 +117,9 @@ const DeactivateUserType = async (req, res) => {
       validFlag: false,
     });
     if (!userTypeStatus) {
-      res.status(404).send("Error: User Type Not Found");
+      res.status(404).send("Error: ViewAllUser Type Not Found");
     }
-    res.status(200).send("User Type Deactivated");
+    res.status(200).send("ViewAllUser Type Deactivated");
   } catch (err) {
     res.status(500).send("Error:" + err);
   }
@@ -238,7 +238,7 @@ const userSignup = async (req, res) => {
     });
     await newUser.save();
     res.status(201).json({
-      msg: "User Created Successfully",
+      msg: "ViewAllUser Created Successfully",
       accessToken,
       newUser: {
         id: newUser._id,
@@ -266,7 +266,7 @@ const adminSignup = async (req, res) => {
       userType: adminTypeDoc._id,
     });
     await newUser.save();
-    res.status(201).json("User Created Successfully");
+    res.status(201).json("ViewAllUser Created Successfully");
   } catch (err) {
     res.status(500).send("Error: " + err);
   }
@@ -276,7 +276,7 @@ const getUserById = async (req, res) => {
   try {
     const user = await Signup.findById(req.params.id);
     if (!user) {
-      return res.status(404).send("Error: User Not Found");
+      return res.status(404).send("Error: ViewAllUser Not Found");
     }
     const userDetails = {
       id: user._id,
@@ -301,9 +301,9 @@ const userUpdate = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!newUser) {
-      return res.status(404).send("Error: User Type Not Found");
+      return res.status(404).send("Error: ViewAllUser Type Not Found");
     }
-    res.status(200).json({msg:"User Updated Successfully", newUser});
+    res.status(200).json({msg:"ViewAllUser Updated Successfully", newUser});
   } catch (err) {
     res.status(500).send("Error: " + err);
   }
@@ -314,7 +314,7 @@ const changePassword = async (req, res) => {
   try {
     const user = await Signup.findOne({ userName: req.body.userName });
     if (!user) {
-      return res.status(404).send("Error: User Not Found");
+      return res.status(404).send("Error: ViewAllUser Not Found");
     }
     const passwordMatch = await bcrypt.compare(
       req.body.oldPassword,
@@ -347,7 +347,7 @@ const getAllUsers = async (req, res) => {
     const userTypeDoc = await userType.findOne({
       name: type.charAt(0).toUpperCase() + type.slice(1),
     });
-    if (!userTypeDoc) return res.status(404).send("User type not found");
+    if (!userTypeDoc) return res.status(404).send("ViewAllUser type not found");
     const users = await Signup.find({ userType: userTypeDoc._id })
       .skip((page - 1) * limit)
       .limit(limit)

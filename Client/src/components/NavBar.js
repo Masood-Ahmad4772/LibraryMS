@@ -18,22 +18,26 @@ import {useNavigate} from "react-router";
 // ---------------- NAV CONFIG ----------------
 const baseLinks = [{label: "Category", path: "/category"}];
 
-const adminLinks = [{label: "AddBook", path: "/addbook"}, {
-    label: "User", children: [{label: "User", path: "/user"}, {label: "ViewALL", path: "/viewall"}],
+const adminLinks = [{
+    label: "UserType", children: [{label: "AddUserType", path: "/addusertype"}, {label: "ViewALLUserType", path: "/viewallusertype"}],
 }, {
-    label: "Admin", children: [{label: "Admin", path: "/admin"},
-        {
-            label: "ViewALL", path: "/viewall",
-        }]
+    label: "ViewAllUser", path: "/viewalluser"
 },
+    {
+        label: "Admin", children: [{label: "Admin", path: "/admin"},
+            {
+                label: "ViewALL", path: "/viewall",
+            }]
+    },
+
     {
         label: "Books",
         children: [
-            {label: "Book", path: "/book"},
+            {label: "AddBook", path: "/addbook"},
             {
                 label: "ViewAllBook", path: "/viewallbooks",
             }
-            ]
+        ]
     }
 ];
 

@@ -31,7 +31,7 @@ const {authMiddleware} = require("../middleware/authMiddleware");
  * @swagger
  * /login:
  *   post:
- *     summary: User login
+ *     summary: ViewAllUser login
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -58,7 +58,7 @@ router.post("/login", userLogin);
  * @swagger
  * /Signup:
  *   post:
- *     summary: User signup
+ *     summary: ViewAllUser signup
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -78,7 +78,7 @@ router.post("/login", userLogin);
  *                 example: "password123"
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: ViewAllUser registered successfully
  */
 router.post("/Signup", userSignup);
 /**
@@ -107,7 +107,7 @@ router.post("/Signup", userSignup);
  *                 example: "password123"
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: ViewAllUser registered successfully
  */
 router.post("/addUser", authMiddleware, adminSignup);
 /**
@@ -141,7 +141,7 @@ router.post("/logout", authMiddleware, logoutUser);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
+ *         description: ViewAllUser ID
  *     requestBody:
  *       required: true
  *       content:
@@ -157,7 +157,7 @@ router.post("/logout", authMiddleware, logoutUser);
  *                 example: "updated@example.com"
  *     responses:
  *       200:
- *         description: User updated successfully
+ *         description: ViewAllUser updated successfully
  */
 router.put("/user/Update/:id", authMiddleware, userUpdate);
 
@@ -195,7 +195,7 @@ router.put("/user/changePassword", authMiddleware, changePassword);
  * @swagger
  * /user/getById/{id}:
  *   get:
- *     summary: Get User By Id
+ *     summary: Get ViewAllUser By Id
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
@@ -205,12 +205,12 @@ router.put("/user/changePassword", authMiddleware, changePassword);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
+ *         description: ViewAllUser ID
  *     responses:
  *       200:
- *         description: User retrieved successfully
+ *         description: ViewAllUser retrieved successfully
  *       404:
- *         description: User not found
+ *         description: ViewAllUser not found
  */
 router.get("/user/getById/:id", authMiddleware, getUserById);
 
@@ -243,7 +243,7 @@ router.get("/users/getAll", authMiddleware, getAllUsers);
 /**
  * @swagger
  * tags:
- *   name: User Types
+ *   name: ViewAllUser Types
  *   description: API for user type management
  */
 
@@ -252,7 +252,7 @@ router.get("/users/getAll", authMiddleware, getAllUsers);
  * /usertype/Add:
  *   post:
  *     summary: Add a new user type
- *     tags: [User Types]
+ *     tags: [ViewAllUser Types]
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -267,7 +267,7 @@ router.get("/users/getAll", authMiddleware, getAllUsers);
  *                 example: "Admin"
  *     responses:
  *       201:
- *         description: User type added successfully
+ *         description: ViewAllUser type added successfully
  */
 router.post("/usertype/Add", authMiddleware, addUserType);
 
@@ -276,7 +276,7 @@ router.post("/usertype/Add", authMiddleware, addUserType);
  * /usertype/Update/{id}:
  *   put:
  *     summary: Update user type
- *     tags: [User Types]
+ *     tags: [ViewAllUser Types]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -285,7 +285,7 @@ router.post("/usertype/Add", authMiddleware, addUserType);
  *         required: true
  *         schema:
  *           type: string
- *         description: User type ID
+ *         description: ViewAllUser type ID
  *     requestBody:
  *       required: true
  *       content:
@@ -295,10 +295,10 @@ router.post("/usertype/Add", authMiddleware, addUserType);
  *             properties:
  *               name:
  *                 type: string
- *                 example: "Updated User Type"
+ *                 example: "Updated ViewAllUser Type"
  *     responses:
  *       200:
- *         description: User type updated successfully
+ *         description: ViewAllUser type updated successfully
  */
 router.put("/usertype/Update/:id", authMiddleware, updateUserType);
 
@@ -307,7 +307,7 @@ router.put("/usertype/Update/:id", authMiddleware, updateUserType);
  * /usertype/getAll:
  *   get:
  *     summary: Get all user types
- *     tags: [User Types]
+ *     tags: [ViewAllUser Types]
  *     security:
  *       - BearerAuth: []
  *     responses:
@@ -321,7 +321,7 @@ router.get("/usertype/getAll", authMiddleware, getAllUserTypes);
  * /usertype/getAllActive:
  *   get:
  *     summary: Get all active user types
- *     tags: [User Types]
+ *     tags: [ViewAllUser Types]
  *     security:
  *       - BearerAuth: []
  *     responses:
@@ -335,7 +335,7 @@ router.get("/usertype/getAllActive", authMiddleware, getAllActiveTypes);
  * /usertype/Activate/{id}:
  *   patch:
  *     summary: Activate a user type
- *     tags: [User Types]
+ *     tags: [ViewAllUser Types]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -344,10 +344,10 @@ router.get("/usertype/getAllActive", authMiddleware, getAllActiveTypes);
  *         required: true
  *         schema:
  *           type: string
- *         description: User type ID
+ *         description: ViewAllUser type ID
  *     responses:
  *       200:
- *         description: User type activated successfully
+ *         description: ViewAllUser type activated successfully
  */
 router.patch("/usertype/Activate/:id", authMiddleware, ActivateUserType);
 
@@ -356,7 +356,7 @@ router.patch("/usertype/Activate/:id", authMiddleware, ActivateUserType);
  * /usertype/Deactivate/{id}:
  *   patch:
  *     summary: Deactivate a user type
- *     tags: [User Types]
+ *     tags: [ViewAllUser Types]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -365,10 +365,10 @@ router.patch("/usertype/Activate/:id", authMiddleware, ActivateUserType);
  *         required: true
  *         schema:
  *           type: string
- *         description: User type ID
+ *         description: ViewAllUser type ID
  *     responses:
  *       200:
- *         description: User type deactivated successfully
+ *         description: ViewAllUser type deactivated successfully
  */
 router.patch("/usertype/Deactivate/:id", authMiddleware, DeactivateUserType);
 
@@ -385,14 +385,14 @@ router.patch("/usertype/Deactivate/:id", authMiddleware, DeactivateUserType);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
+ *         description: ViewAllUser ID
  *     responses:
  *       200:
- *         description: User activated successfully
+ *         description: ViewAllUser activated successfully
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: User not found
+ *         description: ViewAllUser not found
  *       500:
  *         description: Internal server error
  */
@@ -412,14 +412,14 @@ router.patch("/user/ActiveUser/:id", authMiddleware, ActivateUser)
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
+ *         description: ViewAllUser ID
  *     responses:
  *       200:
- *         description: User deactivated successfully
+ *         description: ViewAllUser deactivated successfully
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: User not found
+ *         description: ViewAllUser not found
  *       500:
  *         description: Internal server error
  */

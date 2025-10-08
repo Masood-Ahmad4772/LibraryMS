@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Pagination from "@mui/material/Pagination";
 import Typography from "@mui/material/Typography";
 import { Box, Container, Grid } from "@mui/material";
-import { useGetAllBooksQuery } from "../services/api";
+import {useGetAllActiveBooksQuery, useGetAllBooksQuery} from "../services/api";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import Loader from "./loader/CircularUnderLoad";
@@ -16,18 +16,17 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const limit = 5;
 
-  const { data, isLoading, error, isFetching, refetch } = useGetAllBooksQuery({
+  const { data, isLoading, error, isFetching, refetch } = useGetAllActiveBooksQuery({
     page,
     limit,
   });
-  const Navigate = useNavigate();
-
   useEffect(() => {
     if (!data) {
       refetch();
     }
   }, [data, refetch]);
 
+  const Navigate = useNavigate();
   const handleBookDetail = (id) => {
     Navigate(`/book/${id}`);
   };

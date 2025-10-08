@@ -85,15 +85,17 @@ const validationSchema = Yup.object({
     .required("Email is required"),
 });
 
-const User = () => {
+const ViewAllUser = () => {
   const [page, setPage] = useState(1);
   const limit = 5;
   const type = "User";
-  const { data, isLoading, refetch } = useGetAllUserQuery({
+  const { data,error, isLoading, refetch } = useGetAllUserQuery({
     page,
     limit,
     type,
   });
+  console.log("error", error)
+    console.log("data", data)
 
   const [deactiveUser] = useDeactiveUserMutation();
   const [activeUser] = useActiveUserMutation();
@@ -138,14 +140,14 @@ const User = () => {
         "error"
       );
     } else {
-      Swal.fire("Success!", "User updated successfully.", "success");
+      Swal.fire("Success!", "ViewAllUser updated successfully.", "success");
       refetch();
     }
   };
 
   const handleToggleUser = (user) => {
     Swal.fire({
-      title: user.validFlag ? "Deactivate User?" : "Activate User?",
+      title: user.validFlag ? "Deactivate ViewAllUser?" : "Activate ViewAllUser?",
       text: user.validFlag
         ? "This will deactivate the user."
         : "This will activate the user.",
@@ -160,7 +162,7 @@ const User = () => {
           deactiveUser(user.id)
             .unwrap()
             .then(() => {
-              Swal.fire("warning!", "User has been deactivated.", "success");
+              Swal.fire("warning!", "ViewAllUser has been deactivated.", "success");
               refetch();
             })
             .catch((err) => {
@@ -174,7 +176,7 @@ const User = () => {
           activeUser(user.id)
             .unwrap()
             .then(() => {
-              Swal.fire("Success!", "User has been activated.", "success");
+              Swal.fire("Success!", "ViewAllUser has been activated.", "success");
               refetch();
             })
             .catch((err) => {
@@ -297,7 +299,7 @@ const User = () => {
         )}
       </Box>
 
-      {/* Edit User Dialog */}
+      {/* Edit ViewAllUser Dialog */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <Formik
           initialValues={selectedUser || initialValues}
@@ -353,4 +355,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default ViewAllUser;

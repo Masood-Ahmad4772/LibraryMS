@@ -142,7 +142,7 @@ const ActivateBook = async (req, res) => {
     if (!updatedBook) {
       return res.status(404).send('Book not found');
     }
-    res.status(200).send("Book Activated");
+    res.status(200).json({message:"Book Activated"});
   } catch (err) {
     res.status(500).send('Error updating book' + err);
   }
@@ -156,7 +156,7 @@ const DeactivateBook = async (req, res) => {
     if (!updatedBook) {
       return res.status(404).send('Book not found');
     }
-    res.status(200).send("Book Deactivated");
+    res.status(200).json({message: "Book Deactivated"});
   } catch (err) {
     res.status(500).send('Error updating book' + err);
   }
