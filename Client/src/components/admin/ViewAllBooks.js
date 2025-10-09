@@ -66,7 +66,7 @@ const StyledFormControl = styled(FormControl)({
     "& .MuiInputLabel-root": {
         fontSize: "15px",
         fontWeight: 500,
-        color: "gray",
+        color: "white", // Keeping label white for visibility on dark background
     },
     "& .MuiInputLabel-root.Mui-focused": {
         color: "gray",
@@ -100,7 +100,7 @@ const TextStyledField = styled(TextField)({
     "& .MuiInputBase-input": {
         fontSize: "16px",
         fontWeight: 500,
-        color: "white",
+        color: "black", // ✅ CHANGED TO BLACK for inputs inside the white dialog
     },
     "& .MuiInputLabel-root": {
         fontSize: "15px",
@@ -128,6 +128,41 @@ const TextStyledField = styled(TextField)({
         },
     },
 });
+
+// Styled TextField for the Filter dropdown *outside* the dialog
+const FilterTextField = styled(TextField)({
+    "& .MuiInputBase-input": {
+        fontSize: "16px",
+        fontWeight: 500,
+        color: "white", // Keeping white for visibility on dark background
+    },
+    "& .MuiInputLabel-root": {
+        fontSize: "15px",
+        fontWeight: 300,
+        color: "gray",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+        color: "gray",
+    },
+    "& .MuiFormHelperText-root": {
+        color: "red",
+    },
+    "& .MuiOutlinedInput-root": {
+        borderRadius: "20px",
+        "& fieldset": {
+            borderColor: "gray",
+        },
+        "&:hover fieldset": {
+            borderColor: "gray",
+            borderWidth: "2px",
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "gray",
+            borderWidth: "2px",
+        },
+    },
+});
+
 
 const validationSchema = Yup.object({
     title: Yup.string()
@@ -188,6 +223,7 @@ const ViewAllBooks = () => {
             id: selectedUser._id,
             values: payload,
         });
+        handleClose();
         console.log("Updated book:", result);
         if (result.error) {
             Swal.fire(
@@ -199,8 +235,9 @@ const ViewAllBooks = () => {
             Swal.fire(
                 "Success!",
                 "Book Update Successfully",
-                refetchBooks()
+                "success"
             )
+            refetchBooks();
         }
 
     };
@@ -323,7 +360,8 @@ const ViewAllBooks = () => {
                         multiple
                         value={personName}
                         onChange={handleChange}
-                        input={<OutlinedInput sx={{color: "white"}} label="All"/>}
+                        input={<OutlinedInput sx={{color: "white"}}
+                                              label="All"/>} // Keeping white for visibility on dark background
                         renderValue={(selected) =>
                             selected.length === 0 ? (
                                 <Typography
@@ -351,7 +389,7 @@ const ViewAllBooks = () => {
                 </StyledFormControl>
 
                 {/* Genres dropdown */}
-                <TextStyledField
+                <FilterTextField // Changed to use the FilterTextField for white text
                     select
                     name="Filter"
                     size="small"
@@ -365,7 +403,7 @@ const ViewAllBooks = () => {
                             {g}
                         </MenuItem>
                     ))}
-                </TextStyledField>
+                </FilterTextField>
 
 
                 {/* Books table */}
@@ -373,20 +411,21 @@ const ViewAllBooks = () => {
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow sx={{backgroundColor: "#1976d2"}}>
-                                <TableCell sx={{color: "white", fontWeight: "bold"}}>
+                                {/* ✅ Table header text changed to black */}
+                                <TableCell sx={{color: "black", fontWeight: "bold"}}>
                                     ID
                                 </TableCell>
-                                <TableCell sx={{color: "white", fontWeight: "bold"}}>
+                                <TableCell sx={{color: "black", fontWeight: "bold"}}>
                                     Title
                                 </TableCell>
-                                <TableCell sx={{color: "white", fontWeight: "bold"}}>
+                                <TableCell sx={{color: "black", fontWeight: "bold"}}>
                                     Author
                                 </TableCell>
-                                <TableCell sx={{color: "white", fontWeight: "bold"}}>
+                                <TableCell sx={{color: "black", fontWeight: "bold"}}>
                                     Published Year
                                 </TableCell>
                                 <TableCell
-                                    sx={{color: "white", fontWeight: "bold"}}
+                                    sx={{color: "black", fontWeight: "bold"}}
                                     align="center"
                                 >
                                     Actions
@@ -453,6 +492,7 @@ const ViewAllBooks = () => {
 
                 <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
                     <Paper elevation={0} sx={{p: 4, borderRadius: "12px", minWidth: "60%"}}>
+                        {/* Title text is black by default on white Paper background */}
                         <Typography align="center" variant="h5" fontWeight="bold" gutterBottom>
                             Edit Book
                         </Typography>
@@ -471,7 +511,7 @@ const ViewAllBooks = () => {
                                         gap: "10px",
                                     }}
                                 >
-                                    {/* Title & Author */}
+                                    {/* Title & Author - using TextStyledField (with black text) */}
                                     <Box
                                         sx={{
                                             display: "flex",
@@ -499,7 +539,7 @@ const ViewAllBooks = () => {
                                         />
                                     </Box>
 
-                                    {/* Description */}
+                                    {/* Description - using TextStyledField (with black text) */}
                                     <Field
                                         as={TextStyledField}
                                         name="description"
@@ -511,7 +551,7 @@ const ViewAllBooks = () => {
                                         helperText={<ErrorMessage name="description"/>}
                                     />
 
-                                    {/* Published Year, Genre & Quantity */}
+                                    {/* Published Year, Genre & Quantity - using TextStyledField (with black text) */}
                                     <Box
                                         sx={{
                                             display: "flex",
@@ -607,6 +647,7 @@ const ViewAllBooks = () => {
                                                 style={{color: "red", fontSize: "14px"}}
                                             />
                                         </Box>
+                                        {/* File name text is black by default on white Paper background */}
                                         {preview && (
                                             <Typography variant="body2" color="text.secondary">
                                                 <strong>{typeof preview === "string" ? preview : preview.name}</strong>
@@ -615,8 +656,8 @@ const ViewAllBooks = () => {
                                     </Box>
 
                                     {/* Submit Button */}
-                                    <Button type="submit" variant="contained" sx={{mt: 2}}>
-                                        update Book
+                                    <Button type="submit" variant="contained" sx={{mt: 2}} disable={isBooksLoading}>
+                                        {isBooksLoading ? "updatingBook... " : "updateBook"}
                                     </Button>
                                 </Form>
                             )}

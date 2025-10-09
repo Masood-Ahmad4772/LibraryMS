@@ -99,7 +99,7 @@ const ViewAllUser = () => {
 
   const [deactiveUser] = useDeactiveUserMutation();
   const [activeUser] = useActiveUserMutation();
-  const [updateUser] = useEditUserMutation();
+  const [updateUser, {isLoading: isUpdating}] = useEditUserMutation();
 
   const initialValues = {
     name: "",
@@ -131,7 +131,6 @@ const ViewAllUser = () => {
     });
 
     handleClose(); // Call handleClose after the mutation attempt
-
     // Check the result object for errors
     if (result.error) {
       Swal.fire(
@@ -140,7 +139,7 @@ const ViewAllUser = () => {
         "error"
       );
     } else {
-      Swal.fire("Success!", "ViewAllUser updated successfully.", "success");
+      Swal.fire("Success!", "User updated successfully.", "success");
       refetch();
     }
   };
@@ -343,9 +342,9 @@ const ViewAllUser = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={isLoading}
+                disabled={isUpdating}
               >
-                {isLoading ? "Updating..." : "Update"}
+                {isUpdating ? "Updating..." : "Update"}
               </Button>
             </DialogActions>
           </Form>
