@@ -141,7 +141,10 @@ export const api = createApi({
     }),
       getAllUserType: builder.query({
           query:() => "/usertype/getAll"
-      })
+      }),
+      getBookFilters: builder.query({
+          query: () => "/book/getFilters",
+      }),
   }),
 });
 
@@ -171,6 +174,7 @@ export const {
   useGetBookByGenreQuery,
   useGetUserDataQuery,
   useGetAllUserQuery,
-    useGetAllUserTypeQuery
+    useGetAllUserTypeQuery,
+    useGetBookFiltersQuery
 
 } = api;

@@ -93,9 +93,8 @@ const ViewAllUser = () => {
     page,
     limit,
     type,
-  });
-  console.log("error", error)
-    console.log("data", data)
+  })
+
 
   const [deactiveUser] = useDeactiveUserMutation();
   const [activeUser] = useActiveUserMutation();
@@ -130,8 +129,7 @@ const ViewAllUser = () => {
       data: { name,userName, email},
     });
 
-    handleClose(); // Call handleClose after the mutation attempt
-    // Check the result object for errors
+    handleClose();
     if (result.error) {
       Swal.fire(
         "Error!",

@@ -26,7 +26,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Loader from "../loader/CircularUnderLoad"
 import {
     useActiveBookMutation, useDeactivateBookMutation,
-    useGetAllBooksQuery,
+    useGetAllBooksQuery, useGetBookFiltersQuery,
     useGetGenreAllActiveQuery, useUpdateBookMutation,
 } from "../../services/api";
 import * as Yup from "yup";
@@ -62,6 +62,9 @@ const StyledFormControl = styled(FormControl)({
             borderColor: "gray",
             borderWidth: "2px",
         },
+        "& .MuiSvgIcon-root": {
+            color: "white", // dropdown arrow icon
+        },
     },
     "& .MuiInputLabel-root": {
         fontSize: "15px",
@@ -84,6 +87,8 @@ const StyledMenuItem = styled(MenuItem)(({theme}) => ({
     "&:hover": {
         backgroundColor: "rgba(0,0,0,0.05)",
         borderRadius: "12px",
+    },  "& .MuiSvgIcon-root": {
+        color: "white", // dropdown arrow icon
     },
 
     "&.Mui-selected": {
@@ -112,6 +117,8 @@ const TextStyledField = styled(TextField)({
     },
     "& .MuiFormHelperText-root": {
         color: "red",
+    },  "& .MuiSvgIcon-root": {
+        color: "white", // dropdown arrow icon
     },
     "& .MuiOutlinedInput-root": {
         borderRadius: "20px",
@@ -135,6 +142,8 @@ const FilterTextField = styled(TextField)({
         fontSize: "16px",
         fontWeight: 500,
         color: "white", // Keeping white for visibility on dark background
+    },  "& .MuiSvgIcon-root": {
+        color: "white", // dropdown arrow icon
     },
     "& .MuiInputLabel-root": {
         fontSize: "15px",
@@ -189,10 +198,10 @@ const validationSchema = Yup.object({
 
 
 const ViewAllBooks = () => {
-    const [personName, setPersonName] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState(["all"]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [open, setOpen] = useState(false)
-    const [filter, setFilter] = useState("All"); // default selected value
+    const [filter, setFilter] = useState("all"); // default selected value
     const [page, setPage] = useState(1);
     const limit = 3;
     const type = "User";
@@ -204,16 +213,12 @@ const ViewAllBooks = () => {
         limit,
         type,
     });
-
     // Genres query
     const {data: genresData, isLoading: isGenresLoading, refetch: refetchGenres} = useGetGenreAllActiveQuery();
-
 
     // update book
     const [preview, setPreview] = useState()
     const [updateBook] = useUpdateBookMutation()
-
-
     const onSubmit = async (values) => {
         if (!selectedUser) return;
 
@@ -241,8 +246,6 @@ const ViewAllBooks = () => {
         }
 
     };
-
-
     const initialValues = {
         title: "",
         author: "",
@@ -263,24 +266,38 @@ const ViewAllBooks = () => {
         setOpen(true)
     }
 
-    const handleChange = (event) => {
-        const {target: {value}} = event;
-
-        if (value.includes("All")) {
-            setPersonName(genresData?.map((genre) => genre.name) || []);
-        } else {
-            setPersonName(value);
-        }
-    };
-
-
     const handleClose = () => {
         setOpen(false);
         setSelectedUser(null);
     };
 
 
-    const Filter = ["All", "Active", "deActive"]
+    // filter working
+    const { data: filterData, isLoading: isFilterLoading } = useGetBookFiltersQuery();
+
+    const statusFilterOptions = filterData?.find(f => f.label === "Status")?.options || [];
+    const genreFilterOptions = filterData?.find(f => f.label === "Genre")?.options || [];
+
+
+    const handleChange = (event) => {
+        const { value } = event.target;
+        if (value.includes("all") && value.length > 1) {
+            const withoutAll = value.filter(val => val !== "all");
+            setSelectedGenres(withoutAll);
+        }
+        else if (!value.includes("all") && selectedGenres.includes("all")) {
+            setSelectedGenres(value);
+        }
+        else if (value.length === 0) {
+            setSelectedGenres(["all"]);
+        }
+        else {
+            setSelectedGenres(value);
+        }
+    };
+    console.log("filter", filter)
+
+
 
     // active and deactive book
 
@@ -338,11 +355,16 @@ const ViewAllBooks = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                justifyContent:"center",
                 gap: "15px",
                 p: 4,
             }}
         >
-            {Loading ? <Loader isLoading={Loading}/> : null}
+            <Typography sx={{color:"white"}} variant="h5" fontWeight="bold" align="center" gutterBottom>
+                📚 View All Books
+            </Typography>
+
+            {isFilterLoading || Loading ? <Loader isLoading={true} /> : null}
             <Box maxWidth="md"
                  sx={{
                      display: "flex",
@@ -352,58 +374,64 @@ const ViewAllBooks = () => {
                      alignItems: "center",
                  }}
             >
-                {/* Multi-select filter */}
-                <StyledFormControl fullWidth size="small">
-                    <InputLabel id="all-label" sx={{color: "white"}}>All</InputLabel>
-                    <Select
-                        labelId="all-label"
-                        multiple
-                        value={personName}
-                        onChange={handleChange}
-                        input={<OutlinedInput sx={{color: "white"}}
-                                              label="All"/>} // Keeping white for visibility on dark background
-                        renderValue={(selected) =>
-                            selected.length === 0 ? (
-                                <Typography
-                                    variant="body2"
-                                    sx={{color: "white", fontStyle: "italic"}}
-                                >
-                                    Choose users...
-                                </Typography>
-                            ) : (
-                                selected.join(", ")
-                            )
-                        }
-                        MenuProps={MenuProps}
-                    >
-                        {genresData?.map((genre) => (
-                            <StyledMenuItem
-                                key={genre._id}
-                                value={genre.name}
-                                selected={personName.includes(genre.name)}
-                            >
-                                {genre.name}
-                            </StyledMenuItem>
-                        ))}
-                    </Select>
-                </StyledFormControl>
-
-                {/* Genres dropdown */}
-                <FilterTextField // Changed to use the FilterTextField for white text
+                {/* Status Filter */}
+                <FilterTextField
+                    sx={{ color: "white" }}
                     select
-                    name="Filter"
+                    name="filter"
                     size="small"
                     variant="outlined"
                     fullWidth
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
+                    // InputLabelProps={{ style: { color: "white" }, label:"All" }}
                 >
-                    {Filter.map((g, idx) => (
-                        <MenuItem key={idx} value={g}>
-                            {g}
+                    {statusFilterOptions.map((option, idx) => (
+                        <MenuItem key={idx} value={option.value} >
+                            {option.label}
                         </MenuItem>
                     ))}
                 </FilterTextField>
+
+
+                {/* Genre Multi-Select Filter */}
+                <StyledFormControl fullWidth size="small">
+                    <Select
+                        labelId="genre-filter-label"
+                        multiple
+                        value={selectedGenres}
+                        onChange={handleChange}
+                        input={<OutlinedInput sx={{ color: "white" }} />}
+                        renderValue={(selected) => {
+                            if (selected.length === 0) {
+                                return (
+                                    <Typography variant="body2" sx={{ color: "white", fontStyle: "italic" }}>
+                                        Choose genres...
+                                    </Typography>
+                                );
+                            }
+                            // Convert values back to labels for display
+                            const selectedLabels = selected.map(val => {
+                                const option = genreFilterOptions.find(opt => opt.value === val);
+                                return option ? option.label : val;
+                            });
+                            return selectedLabels.join(", ");
+                        }}
+                        MenuProps={MenuProps}
+                    >
+                        {genreFilterOptions.map((option, i) => (
+                            <StyledMenuItem
+                                key={i}
+                                value={option.value}  // Store the value
+                                selected={selectedGenres.includes(option.value)}  // Compare with value
+                            >
+                                {option.label}
+                            </StyledMenuItem>
+                        ))}
+                    </Select>
+                </StyledFormControl>
+
+
 
 
                 {/* Books table */}
@@ -657,7 +685,7 @@ const ViewAllBooks = () => {
 
                                     {/* Submit Button */}
                                     <Button type="submit" variant="contained" sx={{mt: 2}} disable={isBooksLoading}>
-                                        {isBooksLoading ? "updatingBook... " : "updateBook"}
+                                        {isBooksLoading ? "updatingBook... " : "updatecd Book"}
                                     </Button>
                                 </Form>
                             )}
