@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Select,
     Box,
@@ -25,7 +25,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import Loader from "../loader/CircularUnderLoad"
 import {
-    useActiveBookMutation, useDeactivateBookMutation,
+    useActiveBookMutation, useDeactivateBookMutation, useGetAllBooksMutation,
     useGetAllBooksQuery, useGetBookFiltersQuery,
     useGetGenreAllActiveQuery, useUpdateBookMutation,
 } from "../../services/api";
@@ -207,12 +207,28 @@ const ViewAllBooks = () => {
     const type = "User";
 
 
+
     // Books query
-    const {data: booksData, isLoading: isBooksLoading, refetch: refetchBooks,} = useGetAllBooksQuery({
-        page,
-        limit,
-        type,
-    });
+    const [getAllBooks, { data: booksData, isLoading: isBooksLoading }] = useGetAllBooksMutation();
+
+    useEffect(() => {
+        getAllBooks({
+            page,
+            limit,
+            status: filter,
+            genres: selectedGenres,
+        });
+    }, [page, filter, selectedGenres]);
+
+    const refetchBooks = () => {
+        getAllBooks({
+            page,
+            limit,
+            status: filter,
+            genres: selectedGenres,
+        });
+    };
+
     // Genres query
     const {data: genresData, isLoading: isGenresLoading, refetch: refetchGenres} = useGetGenreAllActiveQuery();
 
@@ -242,7 +258,7 @@ const ViewAllBooks = () => {
                 "Book Update Successfully",
                 "success"
             )
-            refetchBooks();
+            refetchBooks()
         }
 
     };
@@ -294,8 +310,10 @@ const ViewAllBooks = () => {
         else {
             setSelectedGenres(value);
         }
+
     };
-    console.log("filter", filter)
+
+
 
 
 
@@ -322,7 +340,7 @@ const ViewAllBooks = () => {
                 try {
                     if (book.validFlag) {
                         await deactivateBook(book._id).unwrap();
-                        Swal.fire("Deactivated!", "Book has been deactivated.", "warning");
+                        Swal.fire("Deactivated!", "Book has been deactivated.", "success");
                     } else {
                         await activeBook(book._id).unwrap();
                         Swal.fire("Activated!", "Book has been activated.", "success");
@@ -344,6 +362,7 @@ const ViewAllBooks = () => {
 
 
     return (
+
         <Container
             maxWidth={false}
             disableGutters
@@ -367,6 +386,7 @@ const ViewAllBooks = () => {
             {isFilterLoading || Loading ? <Loader isLoading={true} /> : null}
             <Box maxWidth="md"
                  sx={{
+                     width:"100%",
                      display: "flex",
                      flexDirection: "column",
                      gap: 2,

@@ -71,7 +71,7 @@ router.post("/book/Add", authMiddleware, setUploadFolder('books'), upload.single
  *       200:
  *         description: List of books retrieved successfully
  */
-router.get("/book/GetAll", authMiddleware, getAllBooks); // No auth required
+router.post("/book/GetAll", authMiddleware, getAllBooks); // No auth required
 
 /**
  * @swagger

@@ -115,11 +115,18 @@ export const api = createApi({
               method:"PATCH",
           })
       }),
+
     // get
-    getAllBooks: builder.query({
-      query: ({ page = 1, limit }) =>
-        `/book/GetAll?page=${page}&limit=${limit}`,
-    }),
+      getAllBooks: builder.mutation({
+          query: ({ page = 1, limit = 10, status = "all", genres = ["all"] }) => ({
+              url: `/book/GetAll?page=${page}&limit=${limit}`,
+              method: "POST",
+              body: {
+                  Genre: genres,   // ✅ Backend expects "Genre"
+                  Status: status,  // ✅ Backend expects "Status"
+              },
+          }),
+      }),
     getAllActiveBooks: builder.query({
       query: ({ page = 1, limit }) =>
         `/book/getAllActive?page=${page}&limit=${limit}`,
@@ -165,10 +172,10 @@ export const {
   useUpdateUserTypeMutation,
   useActiveUserTypeMutation,
   useDeactiveUserTypeMutation,
+  useGetAllBooksMutation,
 
   //   get query
   useGetAllActiveBooksQuery,
-  useGetAllBooksQuery,
   useGetBookDetailByIdQuery,
   useGetGenreAllActiveQuery,
   useGetBookByGenreQuery,
