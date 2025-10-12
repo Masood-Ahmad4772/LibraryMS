@@ -24,13 +24,6 @@ const adminLinks = [{
     label: "ViewAllUser", path: "/viewalluser"
 },
     {
-        label: "Admin", children: [{label: "Admin", path: "/admin"},
-            {
-                label: "ViewALL", path: "/viewall",
-            }]
-    },
-
-    {
         label: "Books",
         children: [
             {label: "AddBook", path: "/addbook"},

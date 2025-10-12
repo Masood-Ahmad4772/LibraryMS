@@ -14,7 +14,7 @@ import Loader from "./loader/CircularUnderLoad";
 
 const Home = () => {
   const [page, setPage] = useState(1);
-  const limit = 5;
+  const limit = 3;
 
   const { data, isLoading, error, isFetching, refetch } = useGetAllActiveBooksQuery({
     page,

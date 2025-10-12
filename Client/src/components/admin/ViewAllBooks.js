@@ -204,7 +204,7 @@ const ViewAllBooks = () => {
     const [filter, setFilter] = useState("all"); // default selected value
     const [page, setPage] = useState(1);
     const limit = 3;
-    const type = "User";
+
 
 
 
@@ -230,7 +230,7 @@ const ViewAllBooks = () => {
     };
 
     // Genres query
-    const {data: genresData, isLoading: isGenresLoading, refetch: refetchGenres} = useGetGenreAllActiveQuery();
+    const {data: genresData, isLoading: isGenresLoading} = useGetGenreAllActiveQuery();
 
     // update book
     const [preview, setPreview] = useState()
@@ -705,7 +705,7 @@ const ViewAllBooks = () => {
 
                                     {/* Submit Button */}
                                     <Button type="submit" variant="contained" sx={{mt: 2}} disable={isBooksLoading}>
-                                        {isBooksLoading ? "updatingBook... " : "updatecd Book"}
+                                        {isBooksLoading ? "updatingBook... " : "updateBook"}
                                     </Button>
                                 </Form>
                             )}

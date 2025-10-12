@@ -116,9 +116,10 @@ export const api = createApi({
           })
       }),
 
+
     // get
       getAllBooks: builder.mutation({
-          query: ({ page = 1, limit = 10, status = "all", genres = ["all"] }) => ({
+          query: ({ page = 1, limit = 5, status = "all", genres = ["all"] }) => ({
               url: `/book/GetAll?page=${page}&limit=${limit}`,
               method: "POST",
               body: {

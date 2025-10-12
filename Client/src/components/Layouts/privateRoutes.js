@@ -1,6 +1,4 @@
 import Profile from "../user/Profile";
-
-import Admin from "../admin/AllAdmin";
 import ChangePassword from "../user/ChangePassword";
 import ViewAllUser from "../admin/ViewAllUser";
 import AddBook from "../admin/AddBook"
@@ -9,14 +7,11 @@ import AddUserType from "../admin/AddUserType";
 import ViewAllUserType from "../admin/ViewAllUserType";
 
 
+
 export const privateRoutes = [
     {
         path: "/profile",
         element: <Profile/>,
-    },
-    {
-        path: "/admin",
-        element: <Admin/>,
     },
     {
         path: "/changepassword",
